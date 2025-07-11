@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Select a Book</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #cbe6ff, #f0f8ff);
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 900px;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #1d4ed8;
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .book {
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .book:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .book h3 {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    .book p {
+      margin: 0.25rem 0;
+      color: #333;
+    }
+
+    button {
+      margin-top: 0.5rem;
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 600px) {
+      .book-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Available Books</h1>
+    <div class="book-grid" id="bookList"></div>
+  </div>
+
+  <script>
+    const books = [
+      { id: 1, title: "To Kill a Mockingbird", author: "Harper Lee", price: "$10" },
+      { id: 2, title: "Rich Dad Poor Dad", author: "Robert Kiyawoski", price: "$12" },
+      { id: 3, title: "5am Club", author: "Robin Sharma", price: "$9" },
+      { id: 4, title: "Pride and Prejudice", author: "Jane Austen", price: "$15" },
+      { id: 5, title: "The Great Gatsb", author: "F.Scott Fitzgerald", price: "$11" },
+      { id: 6, title: "One Hundred Years of Solitude", author: "Gabriel García Márquez", price: "$13" },
+      { id: 7, title: "The Lord of the Rings", author: "J.R.R. Tolkien", price: "$8" },
+      { id: 8, title: "The Diary of a Young Girl", author: "Anne Frank", price: "$14" }
+    ];
+
+    const bookList = document.getElementById("bookList");
+
+    books.forEach(book => {
+      const div = document.createElement("div");
+      div.className = "book";
+      div.innerHTML = `
+        <h3>${book.title}</h3>
+        <p>by ${book.author}</p>
+        <p>Price: ${book.price}</p>
+        <button onclick="buyBook(${book.id})">Buy Now</button>
+      `;
+      bookList.appendChild(div);
+    });
+
+    function buyBook(id) {
+      localStorage.setItem("selectedBookId", id);
+      window.location.href = "payment.html";
+    }
+  </script>
+</body>
+</html>

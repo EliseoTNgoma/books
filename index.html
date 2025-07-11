@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Email Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef6ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 320px;
+      text-align: center;
+      position: relative;
+    }
+
+    input {
+      width: 90%;
+      padding: 0.75rem;
+      margin: 0.5rem auto;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      display: block;
+    }
+
+    .remember-me {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 90%;
+      margin: 0.5rem auto;
+    }
+
+    .remember-me input[type="checkbox"] {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
+    }
+
+    button {
+      width: 95%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 6px;
+      background: #1d4ed8;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1e40af;
+    }
+
+    .signup-text {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .signup-text a {
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 280px;
+      text-align: center;
+    }
+
+    .close {
+      float: right;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1d4ed8;
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      font-size: 0.95rem;
+      display: none;
+      z-index: 1000;
+      animation: fadeInOut 3s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; bottom: 20px; }
+      10% { opacity: 1; bottom: 30px; }
+      90% { opacity: 1; bottom: 30px; }
+      100% { opacity: 0; bottom: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Login</h1>
+  <input type="email" id="loginEmail" placeholder="Email" required />
+  <input type="password" id="loginPassword" placeholder="Password" required />
+  <div class="remember-me">
+    <input type="checkbox" id="rememberMe" />
+    <label for="rememberMe">Remember me</label>
+  </div>
+  <button onclick="login()">Login</button>
+
+  <div class="signup-text">
+    Don't have an account? <a onclick="openModal()">Sign up</a>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div class="modal" id="signupModal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Sign Up</h2>
+    <input type="email" id="signupEmail" placeholder="Email" required />
+    <input type="password" id="signupPassword" placeholder="Password" required />
+    <button onclick="signup()">Create Account</button>
+  </div>
+</div>
+
+<!-- Toast Message -->
+<div id="toast"></div>
+
+<script>
+  // Show toast
+  function showToast(message, bg = '#1d4ed8') {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.style.backgroundColor = bg;
+    toast.style.display = 'block';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 3000);
+  }
+
+  // Auto-fill remembered email
+  window.onload = () => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      document.getElementById('loginEmail').value = savedEmail;
+      document.getElementById('rememberMe').checked = true;
+    }
+  };
+
+  function login() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const remember = document.getElementById('rememberMe').checked;
+
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+    if (!email || !password) {
+      showToast("Please fill in both fields.", '#f44336');
+      return;
+    }
+
+    if (!users[email]) {
+      showToast("Account not found. Please sign up.", '#f44336');
+    } else if (users[email] !== password) {
+      showToast("Incorrect password.", '#f44336');
+    } else {
+      if (remember) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+      showToast("Login successful! ✅", '#4caf50');
+      setTimeout(() => {
+        window.location.href = "books.html"; // ✅ Redirect after login
+      }, 1500);
+    }
+  }
+
+  function signup() {
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+
+    if (!email || !password) {
+      showToast("Please fill in both fields.", '#f44336');
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+    if (users[email]) {
+      showToast("Email already registered.", '#f44336');
+      return;
+    }
+
+    users[email] = password;
+    localStorage.setItem('users', JSON.stringify(users));
+    showToast("Account created successfully! 🎉", '#4caf50');
+    closeModal();
+  }
+
+  function openModal() {
+    document.getElementById('signupModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('signupModal').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
